@@ -47,6 +47,28 @@ on:
 
 Running on `labeled` as well as `closed` catches pull requests that are labeled as slop after they're closed.
 
+By default, `labels` covers the labels applied by [AgentScan](https://github.com/MatteoGabriele/agentscan-action) and the `suspected ai slop` label commonly used with [anti-slop](https://github.com/peakoss/anti-slop):
+
+| Label                         | Applied by                                    |
+| ----------------------------- | --------------------------------------------- |
+| `agentscan:automated-account` | AgentScan's default `label-automation`        |
+| `agentscan:community-flagged` | AgentScan's default `label-community-flagged` |
+| `agentscan:mixed-signals`     | AgentScan's default `label-mixed`             |
+| `suspected ai slop`           | _(none by default)_                           |
+
+anti-slop doesn't add a label by default, so set its `failure-add-pr-labels` to one of these, or pass your own `labels`:
+
+```yaml
+- uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.3.0
+  with:
+    labels: |
+      spam
+      my custom slop label
+```
+
+This workflow runs with write permissions on pull requests from forks, so consider pinning the action to a full commit SHA rather than a tag.
+The action never checks out or runs code from the pull request.
+
 ### After Actions That Close Pull Requests
 
 Labels and closures made with `GITHUB_TOKEN`, such as by AgentScan or anti-slop, [don't trigger other workflows](https://docs.github.com/en/actions/concepts/security/github_token#when-github_token-triggers-workflow-runs).
@@ -76,28 +98,6 @@ on:
 ```
 
 The action reads the pull request's current state and labels, so it sees changes made by earlier steps.
-
-By default, `labels` covers the labels applied by [AgentScan](https://github.com/MatteoGabriele/agentscan-action) and the `suspected ai slop` label commonly used with [anti-slop](https://github.com/peakoss/anti-slop):
-
-| Label                         | Applied by                                    |
-| ----------------------------- | --------------------------------------------- |
-| `agentscan:automated-account` | AgentScan's default `label-automation`        |
-| `agentscan:community-flagged` | AgentScan's default `label-community-flagged` |
-| `agentscan:mixed-signals`     | AgentScan's default `label-mixed`             |
-| `suspected ai slop`           | _(none by default)_                           |
-
-anti-slop doesn't add a label by default, so set its `failure-add-pr-labels` to one of these, or pass your own `labels`:
-
-```yaml
-- uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.3.0
-  with:
-    labels: |
-      spam
-      my custom slop label
-```
-
-This workflow runs with write permissions on pull requests from forks, so consider pinning the action to a full commit SHA rather than a tag.
-The action never checks out or runs code from the pull request.
 
 ### Inputs
 

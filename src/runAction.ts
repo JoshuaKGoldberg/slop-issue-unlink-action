@@ -7,6 +7,11 @@ import { getPullRequest } from "./getPullRequest.ts";
 import { unlinkIssues } from "./unlinkIssues.ts";
 
 export async function runAction(context: ActionContext) {
+	if (context.eventName === "issues") {
+		core.info("Not a pull request event; skipping.");
+		return;
+	}
+
 	if (
 		context.eventName !== "pull_request" &&
 		context.eventName !== "pull_request_target"
