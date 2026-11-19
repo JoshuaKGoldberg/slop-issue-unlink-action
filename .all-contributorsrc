@@ -12,7 +12,8 @@
         "infra",
         "maintenance",
         "projectManagement",
-        "tool"
+        "tool",
+        "bug"
       ],
       "login": "JoshuaKGoldberg",
       "name": "Josh Ghoulberg 👻",
@@ -26,5 +27,6 @@
   ],
   "projectName": "slop-issue-unlink-action",
   "projectOwner": "JoshuaKGoldberg",
-  "repoType": "github"
+  "repoType": "github",
+  "commitConvention": "angular"
 }
