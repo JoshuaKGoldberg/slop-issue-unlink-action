@@ -1,34 +1,31 @@
 import * as core from "@actions/core";
 
+import type { PullRequest } from "./getPullRequest.ts";
 import type { ActionContext, LinkedIssue, Octokit } from "./types.ts";
 
-import { getLinkedIssues } from "./getLinkedIssues.ts";
 import { unlinkBody } from "./unlinkBody.ts";
 
 export interface UnlinkIssuesSettings {
 	context: ActionContext;
 	number: number;
 	octokit: Octokit;
+	pullRequest: Pick<PullRequest, "body" | "issues">;
 }
 
 export async function unlinkIssues({
 	context,
 	number,
 	octokit,
+	pullRequest,
 }: UnlinkIssuesSettings) {
-	const { owner, repo } = context.repo;
-	const { body, issues } = await getLinkedIssues({
-		number,
-		octokit,
-		owner,
-		repo,
-	});
+	const { body, issues } = pullRequest;
 
 	if (!issues.length) {
 		core.info("No linked issues.");
 		return;
 	}
 
+	const { owner, repo } = context.repo;
 	const updated = unlinkBody(body, issues, `${owner}/${repo}`);
 
 	if (updated.unlinked.length) {

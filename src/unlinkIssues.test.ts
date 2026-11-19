@@ -3,11 +3,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { ActionContext, Octokit } from "./types.ts";
 
-import { getLinkedIssues } from "./getLinkedIssues.ts";
 import { unlinkIssues } from "./unlinkIssues.ts";
 
 vi.mock("@actions/core");
-vi.mock("./getLinkedIssues.ts");
 
 const context = {
 	repo: { owner: "test-owner", repo: "test-repo" },
@@ -24,24 +22,24 @@ describe(unlinkIssues, () => {
 	});
 
 	it("does nothing when there are no linked issues", async () => {
-		vi.mocked(getLinkedIssues).mockResolvedValue({
-			body: "Fixes #123",
-			issues: [],
+		await unlinkIssues({
+			context,
+			number: 1,
+			octokit,
+			pullRequest: { body: "Fixes #123", issues: [] },
 		});
-
-		await unlinkIssues({ context, number: 1, octokit });
 
 		expect(update).not.toHaveBeenCalled();
 		expect(core.info).toHaveBeenCalledWith("No linked issues.");
 	});
 
 	it("updates the body when issues are unlinked", async () => {
-		vi.mocked(getLinkedIssues).mockResolvedValue({
-			body: "Fixes #123",
-			issues: [issue],
+		await unlinkIssues({
+			context,
+			number: 1,
+			octokit,
+			pullRequest: { body: "Fixes #123", issues: [issue] },
 		});
-
-		await unlinkIssues({ context, number: 1, octokit });
 
 		expect(update).toHaveBeenCalledWith({
 			body: "Fixes `#123`",
@@ -56,12 +54,12 @@ describe(unlinkIssues, () => {
 	});
 
 	it("warns about issues that could not be unlinked", async () => {
-		vi.mocked(getLinkedIssues).mockResolvedValue({
-			body: "No references here.",
-			issues: [issue],
+		await unlinkIssues({
+			context,
+			number: 1,
+			octokit,
+			pullRequest: { body: "No references here.", issues: [issue] },
 		});
-
-		await unlinkIssues({ context, number: 1, octokit });
 
 		expect(update).not.toHaveBeenCalled();
 		expect(core.warning).toHaveBeenCalledWith(

@@ -2,10 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { Octokit } from "./types.ts";
 
-import { getLinkedIssues } from "./getLinkedIssues.ts";
+import { getPullRequest } from "./getPullRequest.ts";
 
-describe(getLinkedIssues, () => {
-	it("returns the body and closing issue references", async () => {
+describe(getPullRequest, () => {
+	it("returns the pull request's body, closing issues, labels, and state", async () => {
 		const graphql = vi.fn().mockResolvedValue({
 			repository: {
 				pullRequest: {
@@ -18,11 +18,14 @@ describe(getLinkedIssues, () => {
 							},
 						],
 					},
+					labels: { nodes: [{ name: "slop" }] },
+					merged: false,
+					state: "CLOSED",
 				},
 			},
 		});
 
-		const actual = await getLinkedIssues({
+		const actual = await getPullRequest({
 			number: 1,
 			octokit: { graphql } as unknown as Octokit,
 			owner: "test-owner",
@@ -32,6 +35,9 @@ describe(getLinkedIssues, () => {
 		expect(actual).toEqual({
 			body: "Fixes #123",
 			issues: [{ number: 123, repository: "test-owner/test-repo" }],
+			labels: ["slop"],
+			merged: false,
+			state: "CLOSED",
 		});
 		expect(graphql).toHaveBeenCalledWith(expect.any(String), {
 			number: 1,

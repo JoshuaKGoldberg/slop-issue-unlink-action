@@ -34,7 +34,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.2.0
+      - uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.3.0
 
 name: Slop Issue Unlink
 
@@ -46,6 +46,36 @@ on:
 ```
 
 Running on `labeled` as well as `closed` catches pull requests that are labeled as slop after they're closed.
+
+### After Actions That Close Pull Requests
+
+Labels and closures made with `GITHUB_TOKEN`, such as by AgentScan or anti-slop, [don't trigger other workflows](https://docs.github.com/en/actions/concepts/security/github_token#when-github_token-triggers-workflow-runs).
+To unlink issues from those pull requests, run this action as a later step in the same job:
+
+```yaml
+jobs:
+  anti_slop:
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peakoss/anti-slop@v0.3.0
+        with:
+          failure-add-pr-labels: suspected ai slop
+      - uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.3.0
+
+name: Anti-Slop
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+```
+
+The action reads the pull request's current state and labels, so it sees changes made by earlier steps.
 
 By default, `labels` covers the labels applied by [AgentScan](https://github.com/MatteoGabriele/agentscan-action) and the `suspected ai slop` label commonly used with [anti-slop](https://github.com/peakoss/anti-slop):
 
@@ -59,7 +89,7 @@ By default, `labels` covers the labels applied by [AgentScan](https://github.com
 anti-slop doesn't add a label by default, so set its `failure-add-pr-labels` to one of these, or pass your own `labels`:
 
 ```yaml
-- uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.2.0
+- uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.3.0
   with:
     labels: |
       spam
