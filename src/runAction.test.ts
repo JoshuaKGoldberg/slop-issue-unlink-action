@@ -42,9 +42,12 @@ describe(runAction, () => {
 	});
 
 	it("skips issues events, such as when run after AgentScan", async () => {
-		await runAction(createContext(undefined, "issues"));
+		await expect(
+			runAction(createContext(undefined, "issues")),
+		).resolves.toBeUndefined();
 
 		expect(getPullRequest).not.toHaveBeenCalled();
+		expect(unlinkIssues).not.toHaveBeenCalled();
 		expect(core.info).toHaveBeenCalledWith(
 			"Not a pull request event; skipping.",
 		);
