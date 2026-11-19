@@ -1,8 +1,10 @@
 import * as core from "@actions/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { PullRequest } from "./getPullRequest.ts";
 import type { ActionContext } from "./types.ts";
 
+import { getPullRequest } from "./getPullRequest.ts";
 import { runAction } from "./runAction.ts";
 import { unlinkIssues } from "./unlinkIssues.ts";
 
@@ -10,6 +12,7 @@ vi.mock("@actions/core");
 vi.mock("@actions/github", () => ({
 	getOctokit: vi.fn((token: string) => ({ token })),
 }));
+vi.mock("./getPullRequest.ts");
 vi.mock("./unlinkIssues.ts");
 
 function createContext(
@@ -23,24 +26,26 @@ function createContext(
 	} as ActionContext;
 }
 
-const slopPullRequest = {
-	labels: [{ name: "other" }, { name: "slop" }],
+const slopPullRequest: PullRequest = {
+	body: "Fixes #123",
+	issues: [{ number: 123, repository: "test-owner/test-repo" }],
+	labels: ["other", "slop"],
 	merged: false,
-	number: 1,
-	state: "closed",
+	state: "CLOSED",
 };
 
 describe(runAction, () => {
 	beforeEach(() => {
 		vi.mocked(core.getInput).mockReturnValue("test-token");
 		vi.mocked(core.getMultilineInput).mockReturnValue(["slop", "spam"]);
+		vi.mocked(getPullRequest).mockResolvedValue(slopPullRequest);
 	});
 
 	it.each(["issues", "push"])(
 		"throws on unsupported %s events",
 		async (eventName) => {
 			await expect(
-				runAction(createContext(slopPullRequest, eventName)),
+				runAction(createContext({ number: 1 }, eventName)),
 			).rejects.toThrow(`Unsupported event: ${eventName}.`);
 		},
 	);
@@ -51,12 +56,36 @@ describe(runAction, () => {
 		);
 	});
 
-	it.each([
-		["still open", { state: "open" }],
-		["merged", { merged: true }],
-		["not labeled as slop", { labels: [{ name: "other" }] }],
+	it("reads the pull request's current state rather than the payload's", async () => {
+		const context = createContext({ number: 1, state: "open" });
+
+		await runAction(context);
+
+		expect(getPullRequest).toHaveBeenCalledWith({
+			number: 1,
+			octokit: { token: "test-token" },
+			owner: "test-owner",
+			repo: "test-repo",
+		});
+		expect(unlinkIssues).toHaveBeenCalledWith({
+			context,
+			number: 1,
+			octokit: { token: "test-token" },
+			pullRequest: slopPullRequest,
+		});
+	});
+
+	it.each<[string, Partial<PullRequest>]>([
+		["still open", { state: "OPEN" }],
+		["merged", { merged: true, state: "MERGED" }],
+		["not labeled as slop", { labels: ["other"] }],
 	])("skips a pull request that is %s", async (_, overrides) => {
-		await runAction(createContext({ ...slopPullRequest, ...overrides }));
+		vi.mocked(getPullRequest).mockResolvedValue({
+			...slopPullRequest,
+			...overrides,
+		});
+
+		await runAction(createContext({ number: 1 }));
 
 		expect(unlinkIssues).not.toHaveBeenCalled();
 	});
@@ -64,15 +93,9 @@ describe(runAction, () => {
 	it.each(["pull_request", "pull_request_target"])(
 		"unlinks issues from a closed, unmerged slop pull request on %s",
 		async (eventName) => {
-			const context = createContext(slopPullRequest, eventName);
+			await runAction(createContext({ number: 1 }, eventName));
 
-			await runAction(context);
-
-			expect(unlinkIssues).toHaveBeenCalledWith({
-				context,
-				number: 1,
-				octokit: { token: "test-token" },
-			});
+			expect(unlinkIssues).toHaveBeenCalledOnce();
 		},
 	);
 });

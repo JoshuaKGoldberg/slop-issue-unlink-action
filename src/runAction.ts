@@ -3,6 +3,7 @@ import * as github from "@actions/github";
 
 import type { ActionContext } from "./types.ts";
 
+import { getPullRequest } from "./getPullRequest.ts";
 import { unlinkIssues } from "./unlinkIssues.ts";
 
 export async function runAction(context: ActionContext) {
@@ -15,12 +16,26 @@ export async function runAction(context: ActionContext) {
 		);
 	}
 
-	const { pull_request: pullRequest } = context.payload;
-	if (!pullRequest) {
+	const number = (
+		context.payload.pull_request as undefined | { number?: number }
+	)?.number;
+	if (!number) {
 		throw new Error("No pull request found in the event payload.");
 	}
 
-	if (pullRequest.state !== "closed") {
+	const labels = core.getMultilineInput("labels", { required: true });
+	const octokit = github.getOctokit(
+		core.getInput("github-token", { required: true }),
+	);
+
+	// The event payload may be stale if an earlier step just closed or labeled the PR.
+	const pullRequest = await getPullRequest({
+		number,
+		octokit,
+		...context.repo,
+	});
+
+	if (pullRequest.state === "OPEN") {
 		core.info("Pull request is still open; skipping.");
 		return;
 	}
@@ -30,18 +45,10 @@ export async function runAction(context: ActionContext) {
 		return;
 	}
 
-	const labels = core.getMultilineInput("labels", { required: true });
-	const pullRequestLabels = (pullRequest.labels as { name: string }[]).map(
-		(label) => label.name,
-	);
-	if (!pullRequestLabels.some((label) => labels.includes(label))) {
+	if (!pullRequest.labels.some((label) => labels.includes(label))) {
 		core.info("Pull request has no slop labels; skipping.");
 		return;
 	}
 
-	const octokit = github.getOctokit(
-		core.getInput("github-token", { required: true }),
-	);
-
-	await unlinkIssues({ context, number: pullRequest.number, octokit });
+	await unlinkIssues({ context, number, octokit, pullRequest });
 }

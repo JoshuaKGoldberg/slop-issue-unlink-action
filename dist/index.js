@@ -29217,7 +29217,7 @@ module.exports = {
 __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(9577);
 /* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(5254);
-/* harmony import */ var _runAction_js__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(9640);
+/* harmony import */ var _runAction_js__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(5550);
 
 
 
@@ -29233,7 +29233,7 @@ __webpack_async_result__();
 
 /***/ }),
 
-/***/ 9640:
+/***/ 5550:
 /***/ ((__unused_webpack_module, __webpack_exports__, __nccwpck_require__) => {
 
 
@@ -29246,8 +29246,8 @@ __nccwpck_require__.d(__webpack_exports__, {
 var core = __nccwpck_require__(9577);
 // EXTERNAL MODULE: ./node_modules/.pnpm/@actions+github@9.1.1/node_modules/@actions/github/lib/github.js + 22 modules
 var github = __nccwpck_require__(5254);
-;// CONCATENATED MODULE: ./src/getLinkedIssues.ts
-async function getLinkedIssues({ number, octokit, owner, repo, }) {
+;// CONCATENATED MODULE: ./src/getPullRequest.ts
+async function getPullRequest({ number, octokit, owner, repo, }) {
     const response = await octokit.graphql(`
 			query ($owner: String!, $repo: String!, $number: Int!) {
 				repository(owner: $owner, name: $repo) {
@@ -29261,6 +29261,13 @@ async function getLinkedIssues({ number, octokit, owner, repo, }) {
 								}
 							}
 						}
+						labels(first: 100) {
+							nodes {
+								name
+							}
+						}
+						merged
+						state
 					}
 				}
 			}
@@ -29272,6 +29279,9 @@ async function getLinkedIssues({ number, octokit, owner, repo, }) {
             number: node.number,
             repository: node.repository.nameWithOwner,
         })),
+        labels: pullRequest.labels.nodes.map((label) => label.name),
+        merged: pullRequest.merged,
+        state: pullRequest.state,
     };
 }
 
@@ -29322,19 +29332,13 @@ function escapeRegExp(text) {
 ;// CONCATENATED MODULE: ./src/unlinkIssues.ts
 
 
-
-async function unlinkIssues({ context, number, octokit, }) {
-    const { owner, repo } = context.repo;
-    const { body, issues } = await getLinkedIssues({
-        number,
-        octokit,
-        owner,
-        repo,
-    });
+async function unlinkIssues({ context, number, octokit, pullRequest, }) {
+    const { body, issues } = pullRequest;
     if (!issues.length) {
         core/* info */.pq("No linked issues.");
         return;
     }
+    const { owner, repo } = context.repo;
     const updated = unlinkBody(body, issues, `${owner}/${repo}`);
     if (updated.unlinked.length) {
         await octokit.rest.pulls.update({
@@ -29358,16 +29362,25 @@ function formatIssue(issue) {
 
 
 
+
 async function runAction(context) {
     if (context.eventName !== "pull_request" &&
         context.eventName !== "pull_request_target") {
         throw new Error(`Unsupported event: ${context.eventName}. Run this action on pull_request_target.`);
     }
-    const { pull_request: pullRequest } = context.payload;
-    if (!pullRequest) {
+    const number = context.payload.pull_request?.number;
+    if (!number) {
         throw new Error("No pull request found in the event payload.");
     }
-    if (pullRequest.state !== "closed") {
+    const labels = core/* getMultilineInput */.q3("labels", { required: true });
+    const octokit = github/* getOctokit */.Q(core/* getInput */.V4("github-token", { required: true }));
+    // The event payload may be stale if an earlier step just closed or labeled the PR.
+    const pullRequest = await getPullRequest({
+        number,
+        octokit,
+        ...context.repo,
+    });
+    if (pullRequest.state === "OPEN") {
         core/* info */.pq("Pull request is still open; skipping.");
         return;
     }
@@ -29375,14 +29388,11 @@ async function runAction(context) {
         core/* info */.pq("Pull request was merged; skipping.");
         return;
     }
-    const labels = core/* getMultilineInput */.q3("labels", { required: true });
-    const pullRequestLabels = pullRequest.labels.map((label) => label.name);
-    if (!pullRequestLabels.some((label) => labels.includes(label))) {
+    if (!pullRequest.labels.some((label) => labels.includes(label))) {
         core/* info */.pq("Pull request has no slop labels; skipping.");
         return;
     }
-    const octokit = github/* getOctokit */.Q(core/* getInput */.V4("github-token", { required: true }));
-    await unlinkIssues({ context, number: pullRequest.number, octokit });
+    await unlinkIssues({ context, number, octokit, pullRequest });
 }
 
 
