@@ -2,7 +2,7 @@ author: JoshuaKGoldberg
 branding:
   color: orange
   icon: scissors
-description: Unlinks issues from closed, unmerged slop pull requests. 🧹
+description: Unlinks issues from closed, unmerged slop pull requests. ⛓️‍💥
 inputs:
   github-token:
     default: ${{ github.token }}

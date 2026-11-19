@@ -2,7 +2,7 @@
 
 <p align="center">
 	Unlinks issues from closed, unmerged slop pull requests.
-	🧹
+	⛓️‍💥
 </p>
 
 <p align="center">
@@ -69,7 +69,7 @@ The action logs a warning for any linked issue it couldn't unlink.
 ## Development
 
 See [`.github/CONTRIBUTING.md`](./.github/CONTRIBUTING.md), then [`.github/DEVELOPMENT.md`](./.github/DEVELOPMENT.md).
-Thanks! 💖
+Thanks! ⛓️‍💥
 
 ## Contributors
 

@@ -1,7 +1,7 @@
 {
 	"name": "slop-issue-unlink-action",
 	"version": "0.1.0",
-	"description": "Unlinks issues from closed, unmerged slop pull requests. 🧹",
+	"description": "Unlinks issues from closed, unmerged slop pull requests. ⛓️‍💥",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/JoshuaKGoldberg/slop-issue-unlink-action.git"
