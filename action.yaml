@@ -1,0 +1,16 @@
+author: JoshuaKGoldberg
+branding:
+  color: orange
+  icon: scissors
+description: Unlinks issues from closed, unmerged slop pull requests. 🧹
+inputs:
+  github-token:
+    default: ${{ github.token }}
+    description: GitHub token used to read and edit pull requests.
+  labels:
+    description: Newline-separated labels that mark a pull request as slop.
+    required: true
+name: Slop Issue Unlink Action
+runs:
+  main: dist/index.js
+  using: node24

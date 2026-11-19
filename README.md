@@ -19,15 +19,52 @@
 
 ## Usage
 
-```shell
-npm i slop-issue-unlink-action
+When a pull request is closed without being merged, GitHub keeps showing it as linked from any issues it [closes with a keyword](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword) such as `fixes #123`.
+That's noisy when the pull request was slop.
+
+This action unlinks those issues from closed, unmerged pull requests that have any of the given `labels`.
+It does so by wrapping each closing reference in the pull request's body in a code span, so `fixes #123` becomes ``fixes `#123` ``.
+
+`.github/workflows/slop-issue-unlink.yaml`:
+
+```yaml
+jobs:
+  slop_issue_unlink:
+    permissions:
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.1.0
+        with:
+          labels: |
+            agentscan:automated-account
+            suspected ai slop
+
+name: Slop Issue Unlink
+
+on:
+  pull_request_target:
+    types:
+      - closed
+      - labeled
 ```
 
-```ts
-import { greet } from "slop-issue-unlink-action";
+Running on `labeled` as well as `closed` catches pull requests that are labeled as slop after they're closed.
 
-greet("Hello, world! 💖");
-```
+This workflow runs with write permissions on pull requests from forks, so consider pinning the action to a full commit SHA rather than a tag.
+The action never checks out or runs code from the pull request.
+
+### Inputs
+
+| Input          | Description                                                | Default               |
+| -------------- | ---------------------------------------------------------- | --------------------- |
+| `github-token` | GitHub token used to read and edit pull requests.          | `${{ github.token }}` |
+| `labels`       | Newline-separated labels that mark a pull request as slop. | _(required)_          |
+
+### Limitations
+
+GitHub's API has no way to remove a link added manually in a pull request's _Development_ sidebar.
+The action logs a warning for any linked issue it couldn't unlink.
 
 ## Development
 
