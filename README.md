@@ -34,11 +34,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.1.0
-        with:
-          labels: |
-            agentscan:automated-account
-            suspected ai slop
+      - uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.2.0
 
 name: Slop Issue Unlink
 
@@ -51,6 +47,25 @@ on:
 
 Running on `labeled` as well as `closed` catches pull requests that are labeled as slop after they're closed.
 
+By default, `labels` covers the labels applied by [AgentScan](https://github.com/MatteoGabriele/agentscan-action) and the `suspected ai slop` label commonly used with [anti-slop](https://github.com/peakoss/anti-slop):
+
+| Label                         | Applied by                                                               |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| `agentscan:automated-account` | AgentScan's default `label-automation`                                   |
+| `agentscan:community-flagged` | AgentScan's default `label-community-flagged`                            |
+| `agentscan:mixed-signals`     | AgentScan's default `label-mixed`                                        |
+| `suspected ai slop`           | anti-slop, if configured with `failure-add-pr-labels: suspected ai slop` |
+
+anti-slop doesn't add a label by default, so set its `failure-add-pr-labels` to one of these, or pass your own `labels`:
+
+```yaml
+- uses: JoshuaKGoldberg/slop-issue-unlink-action@v0.2.0
+  with:
+    labels: |
+      spam
+      my custom slop label
+```
+
 This workflow runs with write permissions on pull requests from forks, so consider pinning the action to a full commit SHA rather than a tag.
 The action never checks out or runs code from the pull request.
 
@@ -59,7 +74,7 @@ The action never checks out or runs code from the pull request.
 | Input          | Description                                                | Default               |
 | -------------- | ---------------------------------------------------------- | --------------------- |
 | `github-token` | GitHub token used to read and edit pull requests.          | `${{ github.token }}` |
-| `labels`       | Newline-separated labels that mark a pull request as slop. | _(required)_          |
+| `labels`       | Newline-separated labels that mark a pull request as slop. | _(see above)_         |
 
 ### Limitations
 

@@ -8,8 +8,12 @@ inputs:
     default: ${{ github.token }}
     description: GitHub token used to read and edit pull requests.
   labels:
+    default: |-
+      agentscan:automated-account
+      agentscan:community-flagged
+      agentscan:mixed-signals
+      suspected ai slop
     description: Newline-separated labels that mark a pull request as slop.
-    required: true
 name: Slop Issue Unlink Action
 runs:
   main: dist/index.js
