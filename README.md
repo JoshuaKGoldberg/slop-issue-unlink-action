@@ -49,12 +49,12 @@ Running on `labeled` as well as `closed` catches pull requests that are labeled 
 
 By default, `labels` covers the labels applied by [AgentScan](https://github.com/MatteoGabriele/agentscan-action) and the `suspected ai slop` label commonly used with [anti-slop](https://github.com/peakoss/anti-slop):
 
-| Label                         | Applied by                                                               |
-| ----------------------------- | ------------------------------------------------------------------------ |
-| `agentscan:automated-account` | AgentScan's default `label-automation`                                   |
-| `agentscan:community-flagged` | AgentScan's default `label-community-flagged`                            |
-| `agentscan:mixed-signals`     | AgentScan's default `label-mixed`                                        |
-| `suspected ai slop`           | anti-slop, if configured with `failure-add-pr-labels: suspected ai slop` |
+| Label                         | Applied by                                    |
+| ----------------------------- | --------------------------------------------- |
+| `agentscan:automated-account` | AgentScan's default `label-automation`        |
+| `agentscan:community-flagged` | AgentScan's default `label-community-flagged` |
+| `agentscan:mixed-signals`     | AgentScan's default `label-mixed`             |
+| `suspected ai slop`           | _(none by default)_                           |
 
 anti-slop doesn't add a label by default, so set its `failure-add-pr-labels` to one of these, or pass your own `labels`:
 
