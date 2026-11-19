@@ -29364,6 +29364,10 @@ function formatIssue(issue) {
 
 
 async function runAction(context) {
+    if (context.eventName === "issues") {
+        core/* info */.pq("Not a pull request event; skipping.");
+        return;
+    }
     if (context.eventName !== "pull_request" &&
         context.eventName !== "pull_request_target") {
         throw new Error(`Unsupported event: ${context.eventName}. Run this action on pull_request_target.`);
