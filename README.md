@@ -66,9 +66,6 @@ anti-slop doesn't add a label by default, so set its `failure-add-pr-labels` to 
       my custom slop label
 ```
 
-The `pull_request_target` workflow above runs with write permissions on pull requests from forks, so consider pinning the action to a full commit SHA rather than a tag.
-The action never checks out or runs code from the pull request.
-
 ### After Actions That Close Pull Requests
 
 Labels and closures made with `GITHUB_TOKEN`, such as by AgentScan or anti-slop, [don't trigger other workflows](https://docs.github.com/en/actions/concepts/security/github_token#when-github_token-triggers-workflow-runs).
@@ -99,6 +96,9 @@ on:
 
 The action reads the pull request's current state and labels, so it sees changes made by earlier steps.
 It skips `issues` events, so it's also safe in jobs that run on them, such as AgentScan's with `scan-issues: true`.
+
+Both of these `pull_request_target` workflows run with write permissions on pull requests from forks, so consider pinning actions to full commit SHAs rather than tags.
+This action never checks out or runs code from the pull request.
 
 ### Inputs
 
