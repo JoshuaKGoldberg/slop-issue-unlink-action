@@ -207,8 +207,8 @@ importers:
         specifier: 0.10.0
         version: 0.10.0
       create-typescript-app:
-        specifier: 2.75.3
-        version: 2.75.3(bingo-systems@0.7.0)(typescript@5.9.3)
+        specifier: 2.77.0
+        version: 2.77.0(bingo-systems@0.7.0)(typescript@5.9.3)
       cspell:
         specifier: 10.5.1
         version: 10.5.1
@@ -1681,8 +1681,8 @@ packages:
     resolution: {integrity: sha512-GW4qUsfFo59d0HbUibDlWv5wPz+vAAcaTWbKIuKCf0JkC7wWkSyf8f13IpXn5JkeMlB2P8iTSSIjwXljorg2vA==}
     engines: {node: '>=22'}
 
-  create-typescript-app@2.75.3:
-    resolution: {integrity: sha512-+0pL2SuzZ10HmNm7Q8gowpBZz0fX1VB+ic1yMyjSzTbpwanFuZ41kaD/dZeet7nNxaRytlFqGMJaquC3/u7i1g==}
+  create-typescript-app@2.77.0:
+    resolution: {integrity: sha512-SsRbknJACpBYyo10JdSml1hHNq10BM+PjeosdRLXWC90xC1zv97jdR29jh/E6mMy84GLgFpL6YyZVn8XAGnscA==}
     engines: {node: ^22.13.0 || ^24.11.0 || >=26.0.0}
     hasBin: true
 
@@ -4828,7 +4828,7 @@ snapshots:
 
   content-type@3.1.1: {}
 
-  create-typescript-app@2.75.3(bingo-systems@0.7.0)(typescript@5.9.3):
+  create-typescript-app@2.77.0(bingo-systems@0.7.0)(typescript@5.9.3):
     dependencies:
       '@prettier/sync': 0.6.1(prettier@3.10.1)
       '@typescript-eslint/typescript-estree': 8.73.0(typescript@5.9.3)
