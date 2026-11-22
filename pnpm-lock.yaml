@@ -207,8 +207,8 @@ importers:
         specifier: 0.10.0
         version: 0.10.0
       create-typescript-app:
-        specifier: 2.77.0
-        version: 2.77.0(bingo-systems@0.7.0)(typescript@5.9.3)
+        specifier: 2.83.0
+        version: 2.83.0(bingo-systems@0.7.0)(typescript@5.9.3)
       cspell:
         specifier: 10.5.1
         version: 10.5.1
@@ -1677,8 +1677,8 @@ packages:
     resolution: {integrity: sha512-GW4qUsfFo59d0HbUibDlWv5wPz+vAAcaTWbKIuKCf0JkC7wWkSyf8f13IpXn5JkeMlB2P8iTSSIjwXljorg2vA==}
     engines: {node: '>=22'}
 
-  create-typescript-app@2.77.0:
-    resolution: {integrity: sha512-SsRbknJACpBYyo10JdSml1hHNq10BM+PjeosdRLXWC90xC1zv97jdR29jh/E6mMy84GLgFpL6YyZVn8XAGnscA==}
+  create-typescript-app@2.83.0:
+    resolution: {integrity: sha512-Viz9Njxhi7mW0e20zcM6D1P16kc3w5OoQ5RUzm6Vq7HBNDP32D3BSGQo0Xq9Gw4mw90bTP625figJssCU4YC8w==}
     engines: {node: ^22.13.0 || ^24.11.0 || >=26.0.0}
     hasBin: true
 
@@ -2491,9 +2491,6 @@ packages:
   locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
-
-  lodash@4.18.1:
-    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
@@ -4811,7 +4808,7 @@ snapshots:
 
   content-type@3.1.1: {}
 
-  create-typescript-app@2.77.0(bingo-systems@0.7.0)(typescript@5.9.3):
+  create-typescript-app@2.83.0(bingo-systems@0.7.0)(typescript@5.9.3):
     dependencies:
       '@prettier/sync': 0.6.1(prettier@3.10.1)
       '@typescript-eslint/typescript-estree': 8.73.0(typescript@5.9.3)
@@ -4832,7 +4829,6 @@ snapshots:
       js-yaml: 5.5.0
       json5: 2.2.3
       lazy-value: 3.0.0
-      lodash: 4.18.1
       marked: 18.2.1
       npm-user: 6.1.1
       object-strings-deep: 0.1.2
@@ -5763,8 +5759,6 @@ snapshots:
   locate-path@6.0.0:
     dependencies:
       p-locate: 5.0.0
-
-  lodash@4.18.1: {}
 
   longest-streak@3.1.0: {}
 
